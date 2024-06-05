@@ -12,12 +12,17 @@
     <title>{% block title %} {% endblock %} - FlaskApp</title>
     
     <!--StyleSheet for Navigation Elements-->
-    <!-- <style>
-        .content {
-            margin: auto;
-            padding: 2%;
+    <style>
+        .message {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f3f3f3
         }
-    </style> -->
+        .content {
+            margin: 5px;
+            padding: 10px;
+        }
+    </style>
 
 </head>
 
@@ -31,6 +36,9 @@
             <ul class="navbar-nav collapse navbar-collapse" id="navbarNav">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('comments') }}">Comments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('messages') }}">Messages</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('about') }}">About</a>

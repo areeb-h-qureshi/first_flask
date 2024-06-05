@@ -1,15 +1,14 @@
 import datetime
-from flask import Flask, abort, render_template
+from flask import Flask, abort, render_template, request, url_for, flash, redirect
 
 
 app = Flask(__name__)
 
-messages = [{'title': 'Message One',
+msgs = [{'title': 'Message One',
              'content': 'Message One Content'},
-            {'title': 'Message Two',
+        {'title': 'Message Two',
              'content': 'Message Two Content'}
-            ]
-
+        ]
 ##############################
 ###### Main Page Routes ######
 ##############################
@@ -31,8 +30,16 @@ def about():
 
 @app.route('/messages')
 def messages():
-    return render_template('messages.html', messages=messages)
-
+    '''
+    Renders ./templates/messages.html
+    Global msgs API is passed to render file.
+    '''
+    try:
+        app.logger.info('Passing API and Rendering')
+        return render_template('messages.html', msgs=msgs)
+    except:
+        abort(500)
+                           
 @app.route('/comments/')
 def comments():
     '''
@@ -45,7 +52,6 @@ def comments():
                 'This is the third comment.',
                 'This is the fourth comment.'
                 ]
-
     try:
         app.logger.info('GET comments.html')
         return render_template('comments.html', comments=comments)
@@ -108,6 +114,7 @@ def greet_user(user_id):
     '''
     Displays Username based on Userid. Userid provided in URL subdirectory 
     '''
+    app.logger.info('Building users hashtable...')
     users = {
         12:'Areeb',
         34:'Abeerah',
@@ -117,6 +124,7 @@ def greet_user(user_id):
         return f'<h2>Hello, {users[user_id]}!</h2>'
     except :
         abort(404)
+
 
 if __name__ == "__main__":
     app.debug = True
