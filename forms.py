@@ -16,3 +16,11 @@ class CourseForm(FlaskForm):
                        validators=[InputRequired()])
     available = BooleanField('Available', default='checked')
     submit_button = SubmitField('Submit', render_kw={'class': 'btn btn-primary'})
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[InputRequired(),
+                                             Length(min=10, max=100)])
+    content = TextAreaField('Course Description',
+                                validators=[InputRequired(),
+                                            Length(max=200)])
+    submit_button = SubmitField('Submit', render_kw={'class': 'btn btn-primary'})

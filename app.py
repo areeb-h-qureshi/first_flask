@@ -1,6 +1,7 @@
 import json
+import sqlite3
 import datetime
-from forms import CourseForm
+from forms import CourseForm, PostForm
 from flask import (Flask, abort, render_template, 
                    request, url_for, flash, redirect)
 from flask_wtf import CSRFProtect
@@ -12,6 +13,7 @@ app = Flask(__name__)
 # Secret Key
 app.config['SECRET_KEY'] = b'\xecG\x0e\x82\x06<\xe6\x99}q\x95z\x81\xc2\xf8\xc4O\r\xd3\xc8\x98\xec\x12\xd3\x89\x9al'
 # CSRFProtect().init_app(app)
+
 
 ##############################
 # Storage Handling Functions #
@@ -37,11 +39,22 @@ def load_message_list():
       return json.load(f)
   except FileNotFoundError:
     return []  # Return an empty list if the file doesn't exist
-
+  
 def save_message_list(messages):
   """Saves the message list to a JSON file."""
   with open('messages.json', 'w') as f:
     json.dump(messages, f, indent=4)  # Add indentation for readability
+
+##############################
+##### Database Handling ######
+##############################
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
 
 
 ##############################
@@ -99,6 +112,15 @@ def comments():
 def courses():
     courses = load_course_list()
     return render_template('courses.html', courses=courses)
+
+@app.route('/posts')
+def posts():
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM posts').fetchall()
+    for post in posts:
+       print(type(post))
+    conn.close()
+    return render_template('posts.html', posts=posts)
 
 ##############################
 #### Error Message Routes ####
@@ -182,6 +204,21 @@ def add_course():
         save_course_list(courses_list)
         return redirect(url_for('courses'))
     return render_template('add_form.html', form=form)
+
+@app.route('/add_post', methods=('GET', 'POST'))
+def add_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        app.logger.info('Connecting to Database...')
+        conn = get_db_connection()
+        app.logger.info('Writing to Database...')
+        conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
+                     (form.title.data, form.content.data))
+        conn.commit()
+        app.logger.info('Closing Connection!')
+        conn.close()
+        return redirect(url_for('posts'))
+    return render_template('add_post.html', form=form)
 
 ##############################
 ###### URL Logic Routes ######
