@@ -1,0 +1,30 @@
+[
+    {
+        "title": "Python 101",
+        "description": "Learn Python basics",
+        "price": 34,
+        "available": true,
+        "level": "Beginner"
+    },
+    {
+        "title": "Python 202",
+        "description": "OOP and Front-end Libraries",
+        "price": 79,
+        "available": true,
+        "level": "Intermediate"
+    },
+    {
+        "title": "JavaScript 101",
+        "description": "Basics of JavaScript",
+        "price": 44,
+        "available": true,
+        "level": "Beginner"
+    },
+    {
+        "title": "Hoping 101",
+        "description": "Waste Time > Anxiety > Repeat",
+        "price": 10000000,
+        "available": true,
+        "level": "Advanced"
+    }
+]
