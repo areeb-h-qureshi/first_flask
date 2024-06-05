@@ -4,12 +4,17 @@ from flask import Flask, abort, render_template
 
 app = Flask(__name__)
 
+messages = [{'title': 'Message One',
+             'content': 'Message One Content'},
+            {'title': 'Message Two',
+             'content': 'Message Two Content'}
+            ]
+
 ##############################
-######## Page Routes #########
+###### Main Page Routes ######
 ##############################
 
 @app.route('/')
-@app.route('/index')
 def hello():
     '''
     Renders ./templates/index.html 
@@ -24,37 +29,61 @@ def about():
     '''
     return render_template('about.html')
 
+@app.route('/messages')
+def messages():
+    return render_template('messages.html', messages=messages)
+
 @app.route('/comments/')
 def comments():
     '''
     Renders ./templates/comments.html
-    A list of text named comments is passed to render file.
+    Local List 'comments' is passed to render file.
     '''
+    app.logger.info('Building list of comments...')
     comments = ['This is the first comment.',
                 'This is the second comment.',
                 'This is the third comment.',
                 'This is the fourth comment.'
                 ]
 
-    return render_template('comments.html', comments=comments)
+    try:
+        app.logger.info('GET comments.html')
+        return render_template('comments.html', comments=comments)
+    except: 
+        app.logger.error('Internal Code Error')
+        abort(404)
 
 ##############################
 #### Error Message Routes ####
 ##############################
 
-@app.route('/messages/<int:idx>')
-def message(idx):
+@app.route('/magic/<int:mid>')
+def magic(mid):
     '''
-    Renders ./templates/message.html 
-    Entry from messages hashtable is passed to render file.
+    Renders ./templates/magic.html 
+    Entry from Local Magic hashtable is passed to render file.
     '''
-    messages = {
+    app.logger.info('Building magic hashtable...')
+    magic = {
         200: "Success",
         304: "Yes Master",
         404: "You Lost Bro?",
         500: "Fix your code bruv"
     }
-    return render_template('message.html', message=messages[idx])
+    try:
+        app.logger.info(f'Magic ID {mid}')
+        return render_template('magic.html', magic=magic[mid])
+    except KeyError:
+        app.logger.error(f'Message ID {mid} is not in messages hashtable')
+        abort(404)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
 
 ##############################
 ###### URL Logic Routes ######
